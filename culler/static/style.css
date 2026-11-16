@@ -4,6 +4,7 @@
   font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); }
 body { display: flex; flex-direction: column; overflow: hidden; }
 .muted { color: var(--muted); }
@@ -61,7 +62,6 @@ body.blind .cell.auto.reject img { opacity: 1; }
 .view.cur { outline-color: var(--cur); }
 .view.pick { box-shadow: inset 0 3px 0 var(--pick); }
 .view.reject { box-shadow: inset 0 3px 0 var(--reject); }
-.view.reject > img { opacity: .45; }
 .view > img { position: absolute; max-width: none; user-select: none; -webkit-user-drag: none; }
 .view.zoom { cursor: grab; }
 .overlay { position: absolute; pointer-events: none; }

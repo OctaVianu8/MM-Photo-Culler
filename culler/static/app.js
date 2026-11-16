@@ -199,7 +199,13 @@ function renderStage() {
     const box = $('#views');
     box.textContent = '';
     const n = list.length;
-    const cols = n <= 1 ? 1 : n <= 2 ? 2 : n <= 6 ? 3 : 4;
+    // column count that makes the frames largest for this window and aspect ratio
+    const W = box.clientWidth || 1, H = box.clientHeight || 1, ar = list[0].w / list[0].h;
+    let cols = 1, bestW = 0;
+    for (let c = 1; c <= n; c++) {
+      const w = Math.min(W / c, (H / Math.ceil(n / c)) * ar);
+      if (w > bestW) { bestW = w; cols = c; }
+    }
     box.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
     box.style.gridTemplateRows = `repeat(${Math.ceil(n / cols)}, 1fr)`;
     S.views = list.map((p) => {

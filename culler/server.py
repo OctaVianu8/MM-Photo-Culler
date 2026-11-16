@@ -1,6 +1,7 @@
 """Local web server: JSON API + static review UI. Binds to 127.0.0.1 only."""
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import sqlite3
@@ -83,8 +84,14 @@ def _slim(r: dict) -> dict:
 
 
 def create_app(cfg: Config | None = None, folder: str | None = None) -> FastAPI:
-    app = FastAPI(title="MM Photo Culler", docs_url=None, redoc_url=None)
     sess = Session(cfg or Config())
+
+    @contextlib.asynccontextmanager
+    async def lifespan(_app):
+        yield
+        sess.stop()
+
+    app = FastAPI(title="MM Photo Culler", docs_url=None, redoc_url=None, lifespan=lifespan)
     app.state.session = sess
 
     @app.middleware("http")
@@ -95,10 +102,6 @@ def create_app(cfg: Config | None = None, folder: str | None = None) -> FastAPI:
         if host not in ALLOWED_HOSTS:
             return JSONResponse({"detail": "local access only"}, status_code=403)
         return await call_next(request)
-
-    @app.on_event("shutdown")
-    def _shutdown():
-        sess.stop()
 
     @app.get("/api/status")
     def status():
