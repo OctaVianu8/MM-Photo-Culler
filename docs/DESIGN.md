@@ -93,8 +93,9 @@ no usable preview falls back to a half-size demosaic and says so.
 
 **Noise vs sharpness.** Variance-of-Laplacian rises with ISO. The metric above
 subtracts a noise floor in quadrature and looks only at the strongest edges.
-On the synthetic sweep, adding σ=15 noise changes it by ~5 % while Laplacian
-variance grows 6×; blur ordering is preserved at every noise level
+On the synthetic sweep, adding σ=15 noise lowers it by ~5 % on a sharp frame
+(more on an already blurred one, always downward) while Laplacian variance
+grows 6×; blur ordering is preserved at every noise level
 (`tests/test_metrics.py`). Residual risk: real sensor noise after in-camera NR
 is not white, and very dim, low-contrast subjects have little signal — those
 get low confidence and are never rejected on an absolute threshold.
