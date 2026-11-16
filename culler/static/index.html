@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MM Photo Culler</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <button id="btn-open" title="Open folder (O)">Open folder</button>
+  <span id="folder" class="muted">no folder</span>
+  <span id="progress" hidden><progress id="pbar" max="1" value="0"></progress> <span id="ptext"></span>
+    <button id="btn-cancel" class="link">cancel</button></span>
+  <span class="spacer"></span>
+  <span id="counts" class="muted"></span>
+  <label class="muted">show <select id="filter">
+    <option value="all">all</option><option value="pick">picks</option>
+    <option value="reject">rejects</option><option value="none">unflagged</option>
+    <option value="unreviewed">not confirmed by me</option></select></label>
+  <button id="btn-blind" title="Blind mode: hide automatic suggestions (B)">Blind</button>
+  <button id="btn-export" title="Write XMP sidecars">Export…</button>
+  <button id="btn-help" title="Keyboard shortcuts (?)">?</button>
+</header>
+
+<main>
+  <section id="grid" tabindex="-1"></section>
+  <section id="stage" hidden>
+    <div id="views"></div>
+    <aside id="info"></aside>
+    <div id="strip"></div>
+  </section>
+  <div id="empty">
+    <h1>MM Photo Culler</h1>
+    <p>Open a folder of RAW / JPEG files to start. Originals are only ever read.</p>
+    <button id="btn-open2">Open folder</button>
+  </div>
+</main>
+<div id="toast" hidden></div>
+
+<dialog id="dlg-open">
+  <h2>Open folder</h2>
+  <div class="row"><input id="open-path" spellcheck="false" placeholder="/path/to/photos">
+    <button id="open-go">Open</button></div>
+  <div id="open-info" class="muted"></div>
+  <ul id="open-dirs" class="list"></ul>
+  <div id="open-recent"></div>
+  <div class="row end"><button class="close">Cancel</button></div>
+</dialog>
+
+<dialog id="dlg-export">
+  <h2>Export to Lightroom</h2>
+  <p class="muted">Writes <code>NAME.xmp</code> next to each RAW with <code>xmp:Rating</code> and a colour
+    label. Lightroom does not read pick/reject flags from files, so picks/rejects travel as labels:
+    in Lightroom select the photos → <i>Metadata → Read Metadata from Files</i>, then filter by label.
+    Existing sidecars are merged (and backed up), originals are never touched.</p>
+  <div class="form">
+    <label>Label for picks <input id="ex-pick" value="Green"></label>
+    <label>Label for rejects <input id="ex-reject" value="Red"></label>
+    <label>Minimum stars for picks <select id="ex-minrating">
+      <option value="0">don't add stars</option><option>1</option><option>2</option><option>3</option></select></label>
+    <label><input type="checkbox" id="ex-auto" checked> include automatic picks/rejects I did not override</label>
+    <label>Also transfer keepers to <input id="ex-keepers" spellcheck="false" placeholder="(optional) /path/outside/this/folder"></label>
+    <label>by <select id="ex-mode"><option value="copy">copying</option><option value="move">moving (originals leave this folder)</option></select></label>
+  </div>
+  <pre id="ex-report"></pre>
+  <div class="row end"><button class="close">Close</button>
+    <button id="ex-preview">Preview</button><button id="ex-run" class="primary">Write sidecars</button></div>
+</dialog>
+
+<dialog id="dlg-help">
+  <h2>Keyboard</h2>
+  <table class="keys">
+    <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>previous / next frame</td></tr>
+    <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>previous / next moment (burst)</td></tr>
+    <tr><td><kbd>P</kbd> <kbd>X</kbd> <kbd>U</kbd></td><td>pick / reject / unflag</td></tr>
+    <tr><td><kbd>Shift</kbd>+<kbd>P</kbd></td><td>pick this frame and reject the rest of its moment</td></tr>
+    <tr><td><kbd>1</kbd>–<kbd>5</kbd>, <kbd>0</kbd></td><td>stars, clear stars</td></tr>
+    <tr><td><kbd>A</kbd></td><td>accept the automatic choice for this moment, go to the next</td></tr>
+    <tr><td><kbd>C</kbd></td><td>compare the whole burst side by side</td></tr>
+    <tr><td><kbd>Z</kbd></td><td>zoom 100 % on the detected subject (drag to pan)</td></tr>
+    <tr><td><kbd>Shift</kbd>+<kbd>Z</kbd></td><td>same, from a real RAW decode (slower, true pixels)</td></tr>
+    <tr><td><kbd>Enter</kbd> / <kbd>E</kbd>, <kbd>G</kbd></td><td>loupe, grid</td></tr>
+    <tr><td><kbd>I</kbd></td><td>toggle subject / face boxes</td></tr>
+    <tr><td><kbd>B</kbd></td><td>blind mode (hide automatic suggestions - use it when labelling for <code>culler eval</code>)</td></tr>
+    <tr><td><kbd>T</kbd></td><td>toggle auto-advance after P / X</td></tr>
+    <tr><td><kbd>F</kbd></td><td>cycle filter</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>undo</td></tr>
+    <tr><td><kbd>O</kbd>, <kbd>?</kbd>, <kbd>Esc</kbd></td><td>open folder, this help, back</td></tr>
+  </table>
+  <p class="muted">Dashed outline = suggested by the machine. Solid = decided by you. Your decision always wins.</p>
+  <div class="row end"><button class="close">Close</button></div>
+</dialog>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mm-photo-culler"
+version = "0.1.0"
+description = "Local, keyboard-driven culling for concert / low-light burst photography"
+requires-python = ">=3.10"
+dependencies = [
+  "rawpy>=0.21",
+  "numpy>=1.26",
+  "pillow>=10",
+  "opencv-python-headless>=4.8",
+  "fastapi>=0.110",
+  "uvicorn>=0.27",
+  "exifread>=3.0",
+]
+
+[project.optional-dependencies]
+# Eye-state / head-pose / person detection. Without it the app still works
+# (faces via OpenCV YuNet), it just cannot tell closed eyes.
+faces = ["mediapipe>=0.10.14"]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[project.scripts]
+culler = "culler.cli:main"
+
+[tool.setuptools]
+packages = ["culler"]
+
+[tool.setuptools.package-data]
+culler = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
